@@ -1,0 +1,48 @@
+# Makefile for Python project
+
+# Virtual environment folder
+VENV = test
+
+# Python and Jupyter executables inside venv
+PYTHON = $(VENV)/Scripts/python
+PIP = $(VENV)/Scripts/pip
+JUPYTER = $(VENV)/Scripts/jupyter
+
+# Default target
+all: help
+
+# Create virtual environment
+venv:
+	python -m venv $(VENV)
+	@echo "Virtual environment '$(VENV)' created."
+
+# Install required packages
+install: venv
+	$(PIP) install --upgrade pip
+	$(PIP) install numpy pandas matplotlib scikit-learn jupyter
+	@echo "Packages installed."
+
+# Launch Jupyter Notebook
+notebook: install
+	$(JUPYTER) notebook
+
+# Execute a specific notebook
+run-notebook: install
+	@if [ -z "$(file)" ]; then \
+		echo "Error: please provide notebook file: make run-notebook file=notebook.ipynb"; \
+	else \
+		$(JUPYTER) nbconvert --to notebook --execute $(file) --inplace; \
+	fi
+
+# Clean pycache and temporary files
+clean:
+	rm -rf __pycache__ *.pyc *.pyo *.ipynb_checkpoints
+
+# Show available commands
+help:
+	@echo "Available Makefile commands:"
+	@echo "  make venv                 - Create virtual environment"
+	@echo "  make install              - Install packages in venv"
+	@echo "  make notebook             - Launch Jupyter Notebook"
+	@echo "  make run-notebook file=<notebook.ipynb> - Execute a notebook"
+	@echo "  make clean                - Remove temporary files"
